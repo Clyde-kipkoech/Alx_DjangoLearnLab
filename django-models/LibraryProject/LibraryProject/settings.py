@@ -123,3 +123,8 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Removed duplicate and incomplete INSTALLED_APPS block
 
+
+LOGIN_REDIRECT_URL = "home"   # redirect after login
+LOGOUT_REDIRECT_URL = "login"  # redirect after logout
+LOGIN_URL = "login"           # redirect for @login_required views
+
