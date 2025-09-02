@@ -9,6 +9,7 @@ from .models import Book
 from .models import Library
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from .forms import RegisterForm
@@ -45,7 +46,7 @@ def register_view(request):
 # Login
 def login_view(request):
     if request.method == "POST":
-        form = AuthenticationForm(request, data=request.POST)
+        form = UserCreationForm(request, data=request.POST)
         if form.is_valid():
             username = form.cleaned_data.get("username")
             password = form.cleaned_data.get("password")
@@ -59,7 +60,7 @@ def login_view(request):
         else:
             messages.error(request, "Invalid username or password.")
     else:
-        form = AuthenticationForm()
+        form = UserCreationForm()
     return render(request, "relationship_app/login.html", {"form": form})
 
 
