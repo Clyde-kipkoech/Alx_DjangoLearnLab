@@ -16,25 +16,21 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-cau6t#qb+%!8apkdz3)^90btp)1y*%fj8mo2=g4pug@ah7jksr'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False  # Set to False in production
 
-ALLOWED_HOSTS = []
+# Update this with your domain or server IP in production
+ALLOWED_HOSTS = ["yourdomain.com", "www.yourdomain.com", "localhost", "127.0.0.1"]
 
-# Use custom user model
-AUTH_USER_MODEL = 'accounts.CustomUser'
+
+# Use custom user model (only keep one)
 AUTH_USER_MODEL = 'bookshelf.CustomUser'
 
 
-
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -43,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'relationship_app',
+    'bookshelf',
 ]
 
 MIDDLEWARE = [
@@ -77,7 +74,6 @@ WSGI_APPLICATION = 'LibraryProject.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -88,7 +84,6 @@ DATABASES = {
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -107,29 +102,40 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
-
 STATIC_URL = 'static/'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-# Removed duplicate and incomplete INSTALLED_APPS block
 
 
+# Authentication redirects
 LOGIN_REDIRECT_URL = "home"   # redirect after login
 LOGOUT_REDIRECT_URL = "login"  # redirect after logout
-LOGIN_URL = "login"           # redirect for @login_required views
+LOGIN_URL = "login"            # redirect for @login_required views
 
+
+# ============================
+# 🔒 Security Configurations
+# ============================
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "DENY"
+
+# Cookies security (works only over HTTPS)
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+# Enforce HTTPS (enable only after SSL is set up)
+SECURE_HSTS_SECONDS = 31536000  # 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
