@@ -29,6 +29,8 @@ ALLOWED_HOSTS = []
 
 # Use custom user model
 AUTH_USER_MODEL = 'accounts.CustomUser'
+AUTH_USER_MODEL = 'bookshelf.CustomUser'
+
 
 
 # Application definition
