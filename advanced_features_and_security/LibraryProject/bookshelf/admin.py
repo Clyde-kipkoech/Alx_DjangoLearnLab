@@ -29,7 +29,7 @@ class CustomUserAdmin(UserAdmin):
 
 # Register models in Django admin
 admin.site.register(CustomUser, CustomUserAdmin)
-admin.site.register(Book)# Enable search bar
+
 
 # Register the Book model with the custom admin
 admin.site.register(Book, BookAdmin)
