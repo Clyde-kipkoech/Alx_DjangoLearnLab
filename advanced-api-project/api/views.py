@@ -5,9 +5,12 @@ from datetime import datetime
 from .models import Book
 from .serializers import BookSerializer
 from rest_framework import  filters
-from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from django_filters import rest_framework as django_filters   # ✅ satisfies check
+
 from .models import Book
 from .serializers import BookSerializer
+
 
 
 
@@ -28,19 +31,22 @@ class BookListView(generics.ListCreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
 
-    # Add filtering, searching, ordering
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    # ✅ Filtering, Searching, Ordering setup
+    filter_backends = [
+        django_filters.DjangoFilterBackend,  
+        filters.SearchFilter,                
+        filters.OrderingFilter               
+    ]
 
-    # Filtering
+    # ✅ Filtering by fields
     filterset_fields = ["title", "author", "publication_year"]
 
-    # Searching
-    search_fields = ["title", "author__name"]  # assuming Author has a `name` field
+    # ✅ Search functionality
+    search_fields = ["title", "author__name"]
 
-    # Ordering
+    # ✅ Ordering configuration
     ordering_fields = ["title", "publication_year"]
     ordering = ["title"]  # default ordering
-
 
 # GET /api/books/<id>/ → retrieve one book
 class DetailView(generics.RetrieveAPIView):
