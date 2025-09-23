@@ -31,20 +31,20 @@ class BookListView(generics.ListCreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
 
-    # ✅ Filtering, Searching, Ordering setup
+    #  Filtering, Searching, Ordering setup
     filter_backends = [
         django_filters.DjangoFilterBackend,  
         filters.SearchFilter,                
         filters.OrderingFilter               
     ]
 
-    # ✅ Filtering by fields
+    #  Filtering by fields
     filterset_fields = ["title", "author", "publication_year"]
 
-    # ✅ Search functionality
+    #  Search functionality
     search_fields = ["title", "author__name"]
 
-    # ✅ Ordering configuration
+    #  Ordering configuration
     ordering_fields = ["title", "publication_year"]
     ordering = ["title"]  # default ordering
 
