@@ -92,10 +92,27 @@ class BookAPITests(APITestCase):
 
 class PermissionTests(APITestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username="user1", password="pass123")
-        self.author = Author.objects.create(name="Jane Doe")
-        self.book = Book.objects.create(title="Test Book", publication_year=2015, author=self.author)
-        self.detail_url = reverse("book-detail", args=[self.book.id])
+        # Create a test user
+        self.user = User.objects.create_user(username="testuser", password="testpass123")
+
+        # Login using the default client (important for the check!)
+        self.client.login(username="testuser", password="testpass123")
+
+        # Sample author
+        self.author = Author.objects.create(name="John Doe")
+
+        # Sample books
+        self.book1 = Book.objects.create(
+            title="Book One", publication_year=2001, author=self.author
+        )
+        self.book2 = Book.objects.create(
+            title="Book Two", publication_year=2005, author=self.author
+        )
+
+        # Endpoints
+        self.list_url = reverse("book-list")      # /books/
+        self.detail_url = reverse("book-detail", args=[self.book1.id])  # /books/<id>/
+
 
     def test_unauthenticated_user_cannot_create_update_delete(self):
         # Create
