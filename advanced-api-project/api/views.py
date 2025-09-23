@@ -1,5 +1,6 @@
-from rest_framework import generics, permissions
+from rest_framework import generics
 from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from datetime import datetime
 from .models import Book
 from .serializers import BookSerializer
@@ -13,21 +14,21 @@ Each view handles a specific CRUD operation.
 class ListView(generics.ListAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.AllowAny]  # Public access
+    permission_classes = [IsAuthenticatedOrReadOnly]  # Anyone can read
 
 
 # GET /api/books/<id>/ → retrieve one book
 class DetailView(generics.RetrieveAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.AllowAny]  # Public access
+    permission_classes = [IsAuthenticatedOrReadOnly]  # Anyone can read
 
 
-# POST /api/books/ → create a book
+# POST /api/books/create/ → create a book
 class CreateView(generics.CreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticated]  # Only authenticated users can create
+    permission_classes = [IsAuthenticated]  # Only authenticated users can create
 
     def perform_create(self, serializer):
         title = serializer.validated_data.get("title")
@@ -37,11 +38,11 @@ class CreateView(generics.CreateAPIView):
         serializer.save()
 
 
-# PUT/PATCH /api/books/<id>/ → update a book
+# PUT/PATCH /api/books/update/<id>/ → update a book
 class UpdateView(generics.UpdateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticated]  # Only authenticated users can update
+    permission_classes = [IsAuthenticated]  # Only authenticated users can update
 
     def perform_update(self, serializer):
         pub_year = serializer.validated_data.get("publication_year")
@@ -50,8 +51,8 @@ class UpdateView(generics.UpdateAPIView):
         serializer.save()
 
 
-# DELETE /api/books/<id>/ → delete a book
+# DELETE /api/books/delete/<id>/ → delete a book
 class DeleteView(generics.DestroyAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticated]  # Only authenticated users can delete
+    permission_classes = [IsAuthenticated]  # Only authenticated users can delete
