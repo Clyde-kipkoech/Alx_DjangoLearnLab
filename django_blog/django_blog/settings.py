@@ -36,7 +36,9 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles','blog',
+    'django.contrib.staticfiles',
+    'blog',
+     'accounts.apps.AccountsConfig',
 ]
 
 MIDDLEWARE = [
@@ -127,6 +129,15 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",   # global static folder at project root
 ]
 
+
+# Media (for profile pictures)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# Login redirect / logout redirect defaults (optional)
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+LOGIN_URL = '/login/'   # used by @login_required redirect
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
