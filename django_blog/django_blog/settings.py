@@ -55,7 +55,11 @@ ROOT_URLCONF = 'django_blog.urls'
 
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [ BASE_DIR / "static" ]
+
+STATICFILES_DIRS = [
+    BASE_DIR / "django_blog" / "static",  # static folder location
+]
+STATIC_ROOT = BASE_DIR / "staticfiles"   # for collectstatic (deployment)
 
 TEMPLATES = [
     {
@@ -126,12 +130,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
 
-
-STATICFILES_DIRS = [
-    BASE_DIR / "static",   # global static folder at project root
-]
 
 
 # Media (for profile pictures)
