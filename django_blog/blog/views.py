@@ -1,15 +1,16 @@
-# Create your views here.
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
+from .models import Post
 from .forms import CustomUserCreationForm, UserUpdateForm, ProfileForm
-from .models import Post   # <-- assuming you have a Post model for the blog
 
-# ---------------- Existing Views ---------------- #
-
+# -------------------------
+# Existing views (register & profile)
+# -------------------------
 def register_view(request):
     if request.user.is_authenticated:
         return redirect('home')
@@ -25,7 +26,6 @@ def register_view(request):
     else:
         form = CustomUserCreationForm()
     return render(request, 'accounts/register.html', {'form': form})
-
 
 @login_required
 def profile_view(request):
@@ -46,54 +46,50 @@ def profile_view(request):
     return render(request, 'accounts/profile.html', {'u_form': u_form, 'p_form': p_form})
 
 
-@login_required
-def blog_profile_view(request):
-    if request.method == 'POST':
-        u_form = UserUpdateForm(request.POST, instance=request.user)
-        p_form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
-        if u_form.is_valid() and p_form.is_valid():
-            u_form.save()
-            p_form.save()
-            messages.success(request, "Blog Profile updated successfully.")
-            return redirect('blog_profile')
-        else:
-            messages.error(request, "Please correct the errors below.")
-    else:
-        u_form = UserUpdateForm(instance=request.user)
-        p_form = ProfileForm(instance=request.user.profile)
-
-    return render(request, 'blog/profile.html', {'u_form': u_form, 'p_form': p_form})
-
-
-# ---------------- CRUD Views (Task Requirement) ---------------- #
+# -------------------------
+# BLOG CRUD VIEWS
+# -------------------------
 
 class PostListView(ListView):
     model = Post
-    template_name = 'blog/post_list.html'
-    context_object_name = 'posts'
+    template_name = "blog/post_list.html"
+    context_object_name = "posts"
 
 
 class PostDetailView(DetailView):
     model = Post
-    template_name = 'blog/post_detail.html'
-    context_object_name = 'post'
+    template_name = "blog/post_detail.html"
 
 
-class PostCreateView(CreateView):
-    model = Post
-    fields = ['title', 'content']  # adjust fields to match your Post model
-    template_name = 'blog/post_form.html'
-    success_url = reverse_lazy('post_list')
-
-
-class PostUpdateView(UpdateView):
+class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     fields = ['title', 'content']
-    template_name = 'blog/post_form.html'
-    success_url = reverse_lazy('post_list')
+    template_name = "blog/post_form.html"
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
 
 
-class PostDeleteView(DeleteView):
+class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
-    template_name = 'blog/post_confirm_delete.html'
-    success_url = reverse_lazy('post_list')
+    fields = ['title', 'content']
+    template_name = "blog/post_form.html"
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+    def test_func(self):
+        post = self.get_object()
+        return self.request.user == post.author
+
+
+class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Post
+    template_name = "blog/post_confirm_delete.html"
+    success_url = reverse_lazy("post_list")
+
+    def test_func(self):
+        post = self.get_object()
+        return self.request.user == post.author
