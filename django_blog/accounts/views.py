@@ -1,11 +1,8 @@
-from django.shortcuts import render
-
-# Create your views here.
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from .forms import CustomUserCreationForm, ProfileForm, UserUpdateForm
 from django.contrib import messages
+from .forms import CustomUserCreationForm, UserUpdateForm, ProfileForm
 
 def register_view(request):
     if request.user.is_authenticated:
@@ -14,19 +11,17 @@ def register_view(request):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            # ensure profile created via signal
             login(request, user)
-            messages.success(request, "Registration successful. You are now logged in.")
+            messages.success(request, "Registration successful.")
             return redirect('home')
         else:
-            messages.error(request, "Please correct errors below.")
+            messages.error(request, "Please correct the errors below.")
     else:
         form = CustomUserCreationForm()
     return render(request, 'accounts/register.html', {'form': form})
 
 @login_required
 def profile_view(request):
-    # display user profile and allow edit
     if request.method == 'POST':
         u_form = UserUpdateForm(request.POST, instance=request.user)
         p_form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
@@ -41,8 +36,4 @@ def profile_view(request):
         u_form = UserUpdateForm(instance=request.user)
         p_form = ProfileForm(instance=request.user.profile)
 
-    context = {
-        'u_form': u_form,
-        'p_form': p_form
-    }
-    return render(request, 'accounts/profile.html', context)
+    return render(request, 'accounts/profile.html', {'u_form': u_form, 'p_form': p_form})
