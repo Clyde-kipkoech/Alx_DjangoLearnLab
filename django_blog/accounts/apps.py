@@ -7,7 +7,7 @@ class AccountsConfig(AppConfig):
     name = 'accounts'
 
     def ready(self):
-        import accounts.signals  # registers signals
+        import django_blog.blog.signals  # registers signals
 
 
 # def ready(self):
