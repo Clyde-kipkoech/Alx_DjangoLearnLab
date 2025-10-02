@@ -1,14 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login
+from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse, reverse_lazy
-from .models import Post
+
 from .forms import CustomUserCreationForm, UserUpdateForm, ProfileForm
 # models & forms
-from .models import Post, Comment
+from .models import Post, Comment, Tag
 from .forms import (
     # existing
     # CustomUserCreationForm, UserUpdateForm, ProfileForm,  # if present in this app
@@ -71,7 +72,7 @@ class PostDetailView(DetailView):
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
-    fields = ['title', 'content']
+    fields = ['title', 'content', 'tags']   # added tags here
     template_name = "blog/post_form.html"
 
     def form_valid(self, form):
@@ -91,6 +92,7 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def test_func(self):
         post = self.get_object()
         return self.request.user == post.author
+    
 
 
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
@@ -146,3 +148,28 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         comment = self.get_object()
         return self.request.user == comment.author
+
+
+def posts_by_tag(request, tag_name):
+    """
+    Show posts that have the tag with name == tag_name
+    """
+    tag = get_object_or_404(Tag, name__iexact=tag_name)
+    posts = tag.posts.all().order_by('-created_at')
+    return render(request, 'blog/tag_posts.html', {'tag': tag, 'posts': posts})
+
+def search_view(request):
+    """
+    Search posts by query parameter 'q' in GET.
+    Searches title, content, and tags' names.
+    """
+    q = request.GET.get('q', '').strip()
+    results = Post.objects.none()
+    if q:
+        # search title/content
+        results = Post.objects.filter(
+            Q(title__icontains=q) |
+            Q(content__icontains=q) |
+            Q(tags__name__icontains=q)
+        ).distinct().order_by('-created_at')
+    return render(request, 'blog/search_results.html', {'query': q, 'results': results})

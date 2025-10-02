@@ -6,6 +6,17 @@
 
 {% if user == object.author %}
   <a href="{% url 'post-edit' object.pk %}">Edit</a>
+
   <a href="{% url 'post-delete' object.pk %}">Delete</a>
+
+  <!-- inside post detail or listing -->
+<p>Tags:
+  {% for tag in post.tags.all %}
+    <a href="{% url 'posts-by-tag' tag.name %}">{{ tag.name }}</a>{% if not forloop.last %}, {% endif %}
+  {% empty %}
+    <span>No tags</span>
+  {% endfor %}
+</p>
+
 {% endif %}
 {% endblock %}
