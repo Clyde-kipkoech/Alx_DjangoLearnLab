@@ -4,6 +4,7 @@ from django.db import models
 
 from django.utils import timezone
 from django.contrib.auth.models import User
+from taggit.managers import TaggableManager
 
 class Post(models.Model):
     title = models.CharField(max_length=200)
@@ -12,8 +13,8 @@ class Post(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
     
-    # add tags relationship (keep blank=True so existing posts are fine)
-    tags = models.ManyToManyField('Tag', blank=True, related_name='posts')
+    
+    tags = TaggableManager() 
     
     def __str__(self):
         return self.title
