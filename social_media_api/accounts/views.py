@@ -39,3 +39,42 @@ class LoginView(generics.GenericAPIView):
             'user': UserSerializer(user).data,
             'token': token.key
         })
+
+class FollowUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, user_id):
+        user_to_follow = get_object_or_404(CustomUser, id=user_id)
+        current_user = request.user
+
+        if user_to_follow == current_user:
+            return Response(
+                {"detail": "You cannot follow yourself."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        current_user.follow(user_to_follow)
+        return Response(
+            {"detail": f"You are now following {user_to_follow.username}."},
+            status=status.HTTP_200_OK
+        )
+
+
+class UnfollowUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, user_id):
+        user_to_unfollow = get_object_or_404(CustomUser, id=user_id)
+        current_user = request.user
+
+        if user_to_unfollow == current_user:
+            return Response(
+                {"detail": "You cannot unfollow yourself."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        current_user.unfollow(user_to_unfollow)
+        return Response(
+            {"detail": f"You have unfollowed {user_to_unfollow.username}."},
+            status=status.HTTP_200_OK
+        )
