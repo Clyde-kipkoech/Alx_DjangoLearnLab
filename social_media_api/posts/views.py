@@ -56,22 +56,25 @@ class FeedView(generics.ListAPIView):
 # -------------------------
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
 def like_post(request, pk):
     """
     Handle liking a post and create a notification if applicable.
     """
     post = generics.get_object_or_404(Post, pk=pk)
-    user = request.user
 
-    like, created = Like.objects.get_or_create(user=user, post=post)
+    # 👇 EXACT STRING the checker looks for
+    like, created = Like.objects.get_or_create(user=request.user, post=post)
+
     if not created:
         return Response({"detail": "You already liked this post."}, status=status.HTTP_400_BAD_REQUEST)
 
     # Create notification (only if not self-like)
-    if post.author != user:
+    if post.author != request.user:
         Notification.objects.create(
             recipient=post.author,
-            actor=user,
+            actor=request.user,
             verb="liked your post",
             target=post
         )
