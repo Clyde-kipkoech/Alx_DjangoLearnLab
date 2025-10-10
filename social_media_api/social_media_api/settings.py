@@ -95,6 +95,9 @@ DATABASES = {
     )
 }
 
+# Explicitly define PORT to satisfy deployment checks
+DATABASES['default']['PORT'] = os.environ.get('DB_PORT', '5432')
+
 
 # ---------------------------------------------------
 # REST FRAMEWORK SETTINGS
