@@ -56,19 +56,19 @@ class FeedView(generics.ListAPIView):
 # -------------------------
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
-def like_post(request, post_id):
+def like_post(request, pk):
+    """
+    Handle liking a post and create a notification if applicable.
+    """
+    post = generics.get_object_or_404(Post, pk=pk)
     user = request.user
-    post = get_object_or_404(Post, id=post_id)
 
-    # Prevent multiple likes
-    if Like.objects.filter(user=user, post=post).exists():
+    like, created = Like.objects.get_or_create(user=user, post=post)
+    if not created:
         return Response({"detail": "You already liked this post."}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Create like
-    Like.objects.create(user=user, post=post)
-
-    # Create notification if not liking own post
-    if user != post.author:
+    # Create notification (only if not self-like)
+    if post.author != user:
         Notification.objects.create(
             recipient=post.author,
             actor=user,
@@ -76,14 +76,17 @@ def like_post(request, post_id):
             target=post
         )
 
-    return Response({"detail": "Post liked successfully!"}, status=status.HTTP_201_CREATED)
+    return Response({"detail": "Post liked successfully."}, status=status.HTTP_201_CREATED)
 
 
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
-def unlike_post(request, post_id):
+def unlike_post(request, pk):
+    """
+    Handle unliking a post.
+    """
+    post = generics.get_object_or_404(Post, pk=pk)
     user = request.user
-    post = get_object_or_404(Post, id=post_id)
 
     like = Like.objects.filter(user=user, post=post).first()
     if not like:
