@@ -1,5 +1,5 @@
 # posts/views.py
-from rest_framework import viewsets, permissions, filters
+from rest_framework import viewsets, permissions, filters, generics
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
 from .pagination import PostPagination

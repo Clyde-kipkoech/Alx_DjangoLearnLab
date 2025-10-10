@@ -7,6 +7,10 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
 from .serializers import RegisterSerializer, LoginSerializer, UserSerializer
 from django.contrib.auth import get_user_model
+from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
+from rest_framework.views import APIView
+from .models import CustomUser
 
 User = get_user_model()
 
@@ -41,10 +45,10 @@ class LoginView(generics.GenericAPIView):
         })
 
 class FollowUserView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, user_id):
-        user_to_follow = get_object_or_404(CustomUser, id=user_id)
+        user_to_follow = get_object_or_404(CustomUser.objects.all(), id=user_id)
         current_user = request.user
 
         if user_to_follow == current_user:
@@ -61,10 +65,10 @@ class FollowUserView(APIView):
 
 
 class UnfollowUserView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, user_id):
-        user_to_unfollow = get_object_or_404(CustomUser, id=user_id)
+        user_to_unfollow = get_object_or_404(CustomUser.objects.all(), id=user_id)
         current_user = request.user
 
         if user_to_unfollow == current_user:
