@@ -16,7 +16,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'fallback-secret-key')  #  Use environment variable on Render
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'  #  Controlled via Render env
+DEBUG = False  #  Controlled via Render env
 
 ALLOWED_HOSTS = ['your-app-name.onrender.com', 'localhost', '127.0.0.1']  #  Replace with your Render app name
 
