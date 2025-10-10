@@ -3,7 +3,7 @@ from . import views
 
 urlpatterns = [
     # other post routes
-    path('', views.PostListView.as_view(), name='post-list'),
+    # path('', views.PostListView.as_view(), name='post-list'),
     path('<int:pk>/', views.PostDetailView.as_view(), name='post-detail'),
 
     # ✅ Add these two lines:
